@@ -18,10 +18,12 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("Invalid inputs passed, please check your data.", 422);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
   }
   const { name, email, password } = req.body;
 
@@ -44,14 +46,14 @@ const signup = (req, res, next) => {
     return next(error);
   }
 
-  const createdUser = {
+  const createdUser = new User({
     id: uuid(),
     name,
     email,
     image: "https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg",
     password,
     places: [],
-  };
+  });
 
   try {
     await createdUser.save();

@@ -74,13 +74,12 @@ const createPlace = async (req, res, next) => {
   // }
 
   const createdPlace = new Place({
-    id: uuid(),
     title,
     description,
+    address,
     location: coordinates,
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
-    address,
     creator,
   });
 
@@ -97,13 +96,14 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
+  // console.log(user);
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
     user.places.push(createdPlace);
+    await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError("Creating place failed, please try again", 500);
@@ -116,7 +116,9 @@ const createPlace = async (req, res, next) => {
 const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("Invalid inputs passed, please check your data.", 422);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
   }
 
   const { title, description } = req.body;
