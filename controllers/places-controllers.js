@@ -2,6 +2,7 @@ const uuid = require("uuid/v4");
 const { validationResult } = require("express-validator");
 
 const HttpError = require("../models/http-error");
+const getCoordsForAddress = require("../util/location");
 
 let DUMMY_PLACES = [
   {
@@ -53,6 +54,14 @@ const createPlace = (req, res, next) => {
   }
 
   const { title, description, coordinates, address, creator } = req.body;
+
+  // let coordinates;
+  // try {
+  //   coordinates = await getCoordsForAddress(address)
+  // } catch (error) {
+  //   return next(error)
+  // }
+
   const createdPlace = {
     id: uuid(),
     title,
