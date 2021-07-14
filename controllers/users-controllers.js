@@ -50,7 +50,7 @@ const signup = async (req, res, next) => {
     id: uuid(),
     name,
     email,
-    image: "https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg",
+    image: req.file.path,
     password,
     places: [],
   });
